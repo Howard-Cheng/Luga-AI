@@ -10,6 +10,8 @@ interface ModelOptionProps {
 }
 
 export const ModelOption: FC<ModelOptionProps> = ({ model, onSelect }) => {
+  const modelDisplayName = model.modelName === 'Llama 3 70B' ? 'Basic - everyday usage' : 'Advanced - complex tasks';
+  
   return (
     <WithTooltip
       display={
@@ -40,7 +42,7 @@ export const ModelOption: FC<ModelOptionProps> = ({ model, onSelect }) => {
         >
           <div className="flex items-center space-x-2">
             <ModelIcon provider={model.provider} width={28} height={28} />
-            <div className="text-sm font-semibold">{model.modelName}</div>
+            <div className="text-sm font-semibold">{modelDisplayName}</div>
           </div>
         </div>
       }

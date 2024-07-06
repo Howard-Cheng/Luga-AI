@@ -53,15 +53,24 @@ export const ModelSelect: FC<ModelSelectProps> = ({
   const allModels = [
     ...models.map(model => ({
       modelId: model.model_id as LLMID,
-      modelName: model.name,
+      modelName: model.name === 'Llama 3 70B' ? 'Basic - everyday usage' : 'Advanced - complex tasks',
       provider: "custom" as ModelProvider,
       hostedId: model.id,
       platformLink: "",
       imageInput: false
     })),
-    ...availableHostedModels,
-    ...availableLocalModels,
-    ...availableOpenRouterModels
+    ...availableHostedModels.map(model => ({
+      ...model,
+      modelName: 'Advanced - complex tasks'
+    })),
+    ...availableLocalModels.map(model => ({
+      ...model,
+      modelName: 'Basic - everyday usage'
+    })),
+    ...availableOpenRouterModels.map(model => ({
+      ...model,
+      modelName: 'Advanced - complex tasks'
+    }))
   ]
 
   const groupedModels = allModels.reduce<Record<string, LLM[]>>(
@@ -76,75 +85,28 @@ export const ModelSelect: FC<ModelSelectProps> = ({
     {}
   )
 
-  const selectedModel = allModels.find(
-    model => model.modelId === selectedModelId
-  )
-
-  if (!profile) return null
-
   return (
-    <DropdownMenu
-      open={isOpen}
-      onOpenChange={isOpen => {
-        setIsOpen(isOpen)
-        setSearch("")
-      }}
-    >
-      <DropdownMenuTrigger
-        className="bg-background w-full justify-start border-2 px-3 py-5"
-        asChild
-        disabled={allModels.length === 0}
-      >
-        {allModels.length === 0 ? (
-          <div className="rounded text-sm font-bold">
-            Unlock models by entering API keys in your profile settings.
-          </div>
-        ) : (
-          <Button
-            ref={triggerRef}
-            className="flex items-center justify-between"
-            variant="ghost"
-          >
-            <div className="flex items-center">
-              {selectedModel ? (
-                <>
-                  <ModelIcon
-                    provider={selectedModel?.provider}
-                    width={26}
-                    height={26}
-                  />
-                  <div className="ml-2 flex items-center">
-                    {selectedModel?.modelName}
-                  </div>
-                </>
-              ) : (
-                <div className="flex items-center">Select a model</div>
-              )}
-            </div>
-
-            <IconChevronDown />
-          </Button>
-        )}
+    <DropdownMenu onOpenChange={setIsOpen}>
+      <DropdownMenuTrigger asChild>
+        <Button ref={triggerRef} variant="outline" className="w-full justify-between">
+          <span>
+            {selectedModelId
+              ? allModels.find(model => model.modelId === selectedModelId)?.modelName
+              : "Select a model"}
+          </span>
+          <IconChevronDown />
+        </Button>
       </DropdownMenuTrigger>
-
-      <DropdownMenuContent
-        className="space-y-2 overflow-auto p-2"
-        style={{ width: triggerRef.current?.offsetWidth }}
-        align="start"
-      >
-        <Tabs value={tab} onValueChange={(value: any) => setTab(value)}>
-          {availableLocalModels.length > 0 && (
-            <TabsList defaultValue="hosted" className="grid grid-cols-2">
-              <TabsTrigger value="hosted">Hosted</TabsTrigger>
-
-              <TabsTrigger value="local">Local</TabsTrigger>
-            </TabsList>
-          )}
+      <DropdownMenuContent className="w-80">
+        <Tabs value={tab} onValueChange={setTab}>
+          <TabsList className="flex">
+            <TabsTrigger value="hosted">Hosted</TabsTrigger>
+            <TabsTrigger value="local">Local</TabsTrigger>
+          </TabsList>
         </Tabs>
-
+        
         <Input
           ref={inputRef}
-          className="w-full"
           placeholder="Search models..."
           value={search}
           onChange={e => setSearch(e.target.value)}
