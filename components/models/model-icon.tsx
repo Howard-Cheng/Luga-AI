@@ -1,10 +1,9 @@
 import { cn } from "@/lib/utils"
 import { IconSparkles } from "@tabler/icons-react"
 import { useTheme } from "next-themes"
-import Image from "next/image"
-import { FC, HTMLAttributes } from "react"
+import { FC, SVGAttributes } from "react"
 
-interface ModelIconProps extends HTMLAttributes<HTMLDivElement> {
+interface ModelIconProps extends SVGAttributes<SVGSVGElement> {
   height: number
   width: number
 }
@@ -18,7 +17,8 @@ export const ModelIcon: FC<ModelIconProps> = ({
 
   return (
     <IconSparkles
-      size={width}
+      height={height}
+      width={width}
       className={cn(
         "rounded-sm",
         theme === "dark" ? "bg-white" : "border-DEFAULT border-black"
